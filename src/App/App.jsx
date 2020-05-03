@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { history } from '../_helpers';
 import { alertActions } from '../_actions';
-import { PrivateRoute, NavBarComponent } from '../_components';
 import { HomePage } from '../Views/HomePage';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
@@ -90,13 +89,8 @@ function App() {
 
             <Router history={history}>
                 <Switch>
-                    {/* <Route path="/login" component={LoginPage} /> */}
-                    <PrivateRoute exact path="/" component={HomePage} />
-                    {/* <PrivateRoute path="/listusers" component={ListUserPage} />
-                    <PrivateRoute path="/adduser" component={RegisterPage} /> */}
-                    <PrivateRoute path="/execute" component={ListScriptsPage} />
-                    {/* <PrivateRoute path="/addinstitucion" component={RegisterInstitucionPage} />
-                    <Redirect from="/logout" to="/login" /> */}
+                    <Route exact path="/" component={HomePage} />
+                    <Route path="/execute" component={ListScriptsPage} />
                     <Redirect from="/" to="/" />
                 </Switch>
             </Router>
