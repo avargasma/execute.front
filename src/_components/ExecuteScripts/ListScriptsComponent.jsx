@@ -76,8 +76,7 @@ function ListScriptsComponent() {
     }, []);
 
     //region Service
-    function executeStart(){       
-debugger;
+    function executeStart(){
         if(scriptsList.items.length<=0){
             handleMessage("You have to load files .sql").show();
             return;
@@ -98,7 +97,7 @@ debugger;
                         .then(
                             res => {                        
                                 if (res.result.hasOwnProperty('originalError')) {
-                                    wScripts[i].ErrorMessage = res.result.originalError.info.message;
+                                    wScripts[i].ErrorMessage = wScripts[i].ErrorMessage.replace('Execute ok', '') + '\n' + res.result.originalError.info.message;
                                 }else{
                                     if(wScripts[i].ErrorMessage == '')wScripts[i].ErrorMessage = res.result;
                                 }
