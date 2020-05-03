@@ -91,7 +91,6 @@ function App() {
                 <Switch>
                     <Route exact path="/" component={HomePage} />
                     <Route path="/execute" component={ListScriptsPage} />
-                    <Redirect from="/" to="/" />
                 </Switch>
             </Router>
         </div>
