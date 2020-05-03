@@ -16,10 +16,12 @@ import DataGrid, {
     Grouping,
     GroupPanel,
     Pager,
-    Paging
+    Paging,
+    Export
 } from 'devextreme-react/data-grid';
 import { AddScriptsComponent } from './AddScriptsComponent';
 import { scriptActions, dataBaseActions } from '../../_actions';
+import { custom } from 'devextreme/ui/dialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -60,41 +62,56 @@ const useStyles = makeStyles((theme) => ({
 
 function ListScriptsComponent() {
 
+    const pageSizes = [5, 10, 25, 50, 100];
     const classes = useStyles();
     const scriptsList = useSelector(state => state.scriptsList);
     const dataBaseList = useSelector(state => state.dataBaseList);
+    const modelDataConnection = {Server: '',User: '',Password: '',DataBase: ''};
+    const [dataConnection, setDataConnection] = useState(JSON.parse(sessionStorage.getItem('DATA_CONNECTION')) || modelDataConnection);
+    
     const dispatch = useDispatch();  
-    const pageSizes = [5, 10, 25, 50, 100];
-
+    
     useEffect(() => {
         dispatch(scriptActions.Init());
     }, []);
 
-    function executeStart(){
-        var wScripts = scriptsList.items;
-        for (let i = 0; i < wScripts.length; i++) {
-            const element = wScripts[i];
-            var wText = element.Text.split('GO');
-            for (let index = 0; index < wText.length; index++) {
-                const script = wText[index];
-                executeScript(script)
-                .then(
-                    res => {                        
-                        if (res.result.hasOwnProperty('originalError')) {
-                            debugger;
-                            wScripts[i].ErrorMessage = res.result.originalError.info.message;
-                        }else{
-                            if(wScripts[i].ErrorMessage == '')wScripts[i].ErrorMessage = res.result;
-                        }
-                        dispatch(scriptActions.Update(wScripts[i]));
-                    },
-                    error => {
-                        console.log(error);
-                    }
-                );
-            }    
+    //region Service
+    function executeStart(){       
+debugger;
+        if(scriptsList.items.length<=0){
+            handleMessage("You have to load files .sql").show();
+            return;
+        }else if (!dataConnection.DataBase) {
+            handleMessage("You have to select database").show();
+            return;
         }
-        console.log(wScripts);
+        
+        handleMessageConfirm("¿Are you sure you want to start execute process?").show().then((dialogResult) => {
+            if(dialogResult){
+                var wScripts = scriptsList.items;
+                for (let i = 0; i < wScripts.length; i++) {
+                    const element = wScripts[i];
+                    var wText = element.Text.split('GO');
+                    for (let index = 0; index < wText.length; index++) {
+                        const script = wText[index];
+                        executeScript(script)
+                        .then(
+                            res => {                        
+                                if (res.result.hasOwnProperty('originalError')) {
+                                    wScripts[i].ErrorMessage = res.result.originalError.info.message;
+                                }else{
+                                    if(wScripts[i].ErrorMessage == '')wScripts[i].ErrorMessage = res.result;
+                                }
+                                dispatch(scriptActions.Update(wScripts[i]));
+                            },
+                            error => {
+                                console.log(error);
+                            }
+                        );
+                    }    
+                }
+            }
+        });        
     }
 
     function executeScript(pScript){
@@ -126,26 +143,69 @@ function ListScriptsComponent() {
         });
     }
 
+    function handleMessageConfirm(message, title){
+        let wDialog = custom({
+            title: (title)?title:"System",
+            messageHtml: message,
+            buttons: [{
+                text: "Confirm",
+                onClick: (e) => {
+                    return true
+                }
+            },
+            {
+                text: "Cancel",
+                onClick: (e) => {
+                    return false
+                }, 
+            }]
+        });
+        return wDialog;           
+    } 
+
+    function handleMessage(message, title){
+        let wDialog = custom({
+            title: (title)?title:"System",
+            messageHtml: message,
+            buttons: [{
+                text: "Ok",
+                onClick: (e) => {
+                    return true
+                }
+            }]
+        });
+        return wDialog;           
+    } 
+
+
     function startConnect(){
-        connect()
+        connect(dataConnection)
         .then(
-            res => { 
-                console.log(res);
+            res => {
                 dispatch(dataBaseActions.loadAll(res.result));
-                alert('Connection Ok');
+                sessionStorage.setItem('DATA_CONNECTION',JSON.stringify(dataConnection));
+                handleMessage("Connection started ok").show().then((dialogResult) => {
+                    console.log(dialogResult);
+                });
+
             },
             error => {
-                debugger;
                 console.log(error);
             }
         );
     }
 
-    function connect(){
+    function clearDataConnect(){
+        const wDataConnection = {Server: '',User: '',Password: '',DataBase: ''};
+        setDataConnection(wDataConnection);
+        sessionStorage.setItem('DATA_CONNECTION',JSON.stringify(wDataConnection));
+    }
+
+    function connect(pDataConnection){
         var data = {
-            server:dataConnection.Server,
-            user:dataConnection.User,
-            password:dataConnection.Password
+            server:pDataConnection.Server,
+            user:pDataConnection.User,
+            password:pDataConnection.Password
         }
         const requestOptions = {
             method: 'POST',
@@ -155,16 +215,8 @@ function ListScriptsComponent() {
     
         return fetch(`${config.apiUrl}/connection`, requestOptions).then(handleResponse);
     }
-    
-    const modelDataConnection = {
-        Server: '',
-        User: '',
-        Password: '',
-        DataBase: 'master'
-    };
-
-    const [dataConnection, setDataConnection] = useState(modelDataConnection);
-    
+    //endregion Service
+   
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -182,11 +234,15 @@ function ListScriptsComponent() {
             );
         });
     }
+
+    function onExporting(e) {
+        if(scriptsList.items.length <= 0)
+            e.cancel = true;
+    }
     
     return (
         <div className="col-lg-12  h-100">
-            <Grid container component="main" className={classes.root}>
-           
+            <Grid container component="main" className={classes.root}>           
                 <Grid item xs={12} sm={12} md={12} component={Paper} elevation={6} square>
                     <div className={classes.paper}>
                         <Typography component="h1" variant="h5">Data Connection</Typography>
@@ -253,7 +309,7 @@ function ListScriptsComponent() {
                                         fullWidth
                                         variant="contained"
                                         color="primary"
-                                        
+                                        onClick={clearDataConnect}
                                     >
                                         Clear
                             </Button>
@@ -273,7 +329,8 @@ function ListScriptsComponent() {
                     showColumnLines={true}
                     rowAlternationEnabled={true}
                     allowColumnResizing={true}
-                    columnAutoWidth={true}>
+                    columnAutoWidth={true}
+                    onExporting={onExporting}>
                     showBorders={true}>
                     <GroupPanel visible={false} />
                     <Grouping autoExpandAll={false} />
@@ -284,6 +341,7 @@ function ListScriptsComponent() {
                     <Column dataField="ErrorMessage" width="200px"/>
                     <Pager allowedPageSizes={pageSizes} showPageSizeSelector={true} />
                     <Paging defaultPageSize={5} />
+                    <Export enabled={true} />
                 </DataGrid>
             }
 

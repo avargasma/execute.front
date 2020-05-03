@@ -12,19 +12,11 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import PlaylistAdd from '@material-ui/icons/PlaylistAdd';
-import BeenhereOutlinedIcon from '@material-ui/icons/BeenhereOutlined';
-import BlockRoundedIcon from '@material-ui/icons/BlockRounded';
-import Business from '@material-ui/icons/Business';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ExitToApp from '@material-ui/icons/ExitToApp';
-import ListAlt from '@material-ui/icons/ListAlt';
-import PersonAdd from '@material-ui/icons/PersonAdd';
+import Code from '@material-ui/icons/Code';
 
-import { Router, Route, Switch, Redirect } from 'react-router-dom';
-import { PrivateRoute } from '../_components';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -87,7 +79,6 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'flex-end',
         padding: theme.spacing(0, 1),
-        // necessary for content to be below app bar
         ...theme.mixins.toolbar,
     },
     content: {
@@ -103,7 +94,6 @@ function NavBarComponent(props) {
 
     useEffect(() => {
         history.listen((location, action) => {
-            // clear alert on location change
             dispatch(alertActions.clear());
         });
     }, []);
@@ -170,32 +160,17 @@ function NavBarComponent(props) {
                 <List>
                     <ListItem button key="execute" component={Link} to='/execute' /* component={props => <Link to="/listusers" {...props} />} */>
                         <ListItemIcon>
-                            <Business />
+                            <Code />
                         </ListItemIcon>
                         <ListItemText primary="Execute Scripts" />
                     </ListItem>                    
                 </List>
                 <Divider />
-                {/* <List>
-                    <ListItem button key="logout" component={Link} to='/logout'>
-                        <ListItemIcon>
-                            <ExitToApp />
-                        </ListItemIcon>
-                        <ListItemText primary="Salir" />
-                    </ListItem>
-                </List> */}
             </Drawer>
-           {/*  <Router history={history}> */}
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                   {/*  <Switch>
-                        <PrivateRoute exact path="/" component={HomePage} />
-                        <PrivateRoute exact path="/listusers" component={ListUserPage} key="listusers" />
-                        <PrivateRoute exact path="/adduser" component={RegisterPage} key="adduser" />
-                    </Switch> */}
                     {props.children}
                 </main>
-           {/*  </Router> */}
         </div>
     );
 }
