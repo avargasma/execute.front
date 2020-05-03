@@ -30,9 +30,7 @@ import { Link } from 'react-router-dom';
 
 import { history } from '../_helpers';
 import { alertActions } from '../_actions';
-import { HomePage } from '../Views/HomePage';
-import { RegisterPage } from '../Views/RegisterPage';
-import { ListUserPage } from '../Views/ListUsersPage/ListUsersPage';
+
 
 const drawerWidth = 240;
 
