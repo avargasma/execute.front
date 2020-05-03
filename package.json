@@ -1,0 +1,40 @@
+{
+    "name": "medicalapp",
+    "version": "1.0.0",
+    "license": "MIT",
+    "scripts": {
+        "build": "webpack --mode production",
+        "start": "webpack-dev-server --open"
+    },
+    "dependencies": {
+        "@devexpress/dx-react-core": "^2.5.1",
+        "@devexpress/dx-react-grid": "^2.5.1",
+        "@devexpress/dx-react-grid-material-ui": "^2.5.1",
+        "@material-ui/core": "^4.9.7",
+        "@material-ui/icons": "^4.9.1",
+        "bootstrap": "^4.4.1",
+        "devextreme": "19.2.6",
+        "devextreme-react": "19.2.6",
+        "history": "^4.10.1",
+        "react": "^16.13.0",
+        "react-bootstrap": "^1.0.0-beta.17",
+        "react-dom": "^16.13.0",
+        "react-material-ui-form-validator": "^2.0.10",
+        "react-redux": "^7.2.0",
+        "react-router-dom": "^5.1.2",
+        "redux": "^4.0.5",
+        "redux-logger": "^4.0.0",
+        "redux-thunk": "^2.3.0"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.4.3",
+        "@babel/preset-env": "^7.4.3",
+        "@babel/preset-react": "^7.0.0",
+        "babel-loader": "^8.0.5",
+        "html-webpack-plugin": "^3.2.0",
+        "path": "^0.12.7",
+        "webpack": "^4.29.6",
+        "webpack-cli": "^3.3.0",
+        "webpack-dev-server": "^3.2.1"
+    }
+}
