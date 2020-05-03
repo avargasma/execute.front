@@ -177,22 +177,38 @@ debugger;
         return wDialog;           
     } 
 
+    function validateDataConnection(){
+        if (!dataConnection.Server) {
+            handleMessage("Server can't be empty").show();
+            return false;
+        }else if (!dataConnection.User) {
+            handleMessage("User can't be empty").show();
+            return false;
+        }else if (!dataConnection.Password) {
+            handleMessage("Password can't be empty").show();
+            return false;
+        }else {
+            return true;
+        }
+    }
 
     function startConnect(){
-        connect(dataConnection)
-        .then(
-            res => {
-                dispatch(dataBaseActions.loadAll(res.result));
-                sessionStorage.setItem('DATA_CONNECTION',JSON.stringify(dataConnection));
-                handleMessage("Connection started ok").show().then((dialogResult) => {
-                    console.log(dialogResult);
-                });
-
-            },
-            error => {
-                console.log(error);
-            }
-        );
+        if(validateDataConnection()){
+            connect(dataConnection)
+            .then(
+                res => {
+                    dispatch(dataBaseActions.loadAll(res.result));
+                    sessionStorage.setItem('DATA_CONNECTION',JSON.stringify(dataConnection));
+                    handleMessage("Connection started ok").show().then((dialogResult) => {
+                        console.log(dialogResult);
+                    });
+    
+                },
+                error => {
+                    console.log(error);
+                }
+            );
+        }       
     }
 
     function clearDataConnect(){
