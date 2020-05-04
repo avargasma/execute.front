@@ -85,6 +85,10 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         padding: theme.spacing(3),
     },
+    textLink:{ 
+        textDecoration: 'none',
+        color: 'white'
+    },
 }));
 
 function NavBarComponent(props) {
@@ -132,8 +136,8 @@ function NavBarComponent(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-                        Execute App
-          </Typography>
+                        <Link to="/" className={classes.textLink}>Execute App</Link>
+                    </Typography>
                 </Toolbar>
             </AppBar>
 
