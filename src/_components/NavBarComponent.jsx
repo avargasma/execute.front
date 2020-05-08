@@ -122,6 +122,7 @@ function NavBarComponent(props) {
         <div className={classes.root}>
             <CssBaseline />
             <AppBar
+                style={{ background: '#032556' }}
                 position="fixed"
                 className={clsx(classes.appBar, {
                     [classes.appBarShift]: open,

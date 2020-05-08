@@ -16,9 +16,7 @@ export function scriptsList(state ={}, action) {
                 ...state,
                 items: state.items.map(
                     (item, i) => i === 1 ? {...item, ErrorMessage: action.pScript.ErrorMessage}
-                                            : item)
-                /* items:[...state.items[(state.items.indexOf(action.pScript))], ErrorMessage: action.pScript.ErrorMessage] */
-            };
+                                            : item)};
         default:
             return state
     }
