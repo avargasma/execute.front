@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import config from "config";
 import { useDispatch, useSelector } from "react-redux";
-import TextField from "@material-ui/core/TextField";
+
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
@@ -11,8 +11,7 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
-import PowerIcon from "@material-ui/icons/Power";
-import BackspaceIcon from '@material-ui/icons/Backspace';
+
 import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
 import { ProgressBar } from "devextreme-react/progress-bar";
 import DataGrid, {
@@ -24,6 +23,7 @@ import DataGrid, {
   Export,
 } from "devextreme-react/data-grid";
 import { AddScriptsComponent } from "./AddScriptsComponent";
+import { ConnectionComponent } from "./ConnectionComponent";
 import { scriptActions, dataBaseActions, loaderActions } from "../../_actions";
 import { custom } from "devextreme/ui/dialog";
 
@@ -207,6 +207,17 @@ function ListScriptsComponent() {
     return wDialog;
   }
 
+  function clearDataConnect() {
+    const wDataConnection = {
+      Server: "",
+      User: "",
+      Password: "",
+      DataBase: "",
+    };
+    setDataConnection(wDataConnection);
+    sessionStorage.setItem("DATA_CONNECTION", JSON.stringify(wDataConnection));
+  }
+
   function handleMessage(message, title) {
     let wDialog = custom({
       title: title ? title : "System",
@@ -223,71 +234,7 @@ function ListScriptsComponent() {
     return wDialog;
   }
 
-  function validateDataConnection() {
-    if (!dataConnection.Server) {
-      handleMessage("Server can't be empty").show();
-      return false;
-    } else if (!dataConnection.User) {
-      handleMessage("User can't be empty").show();
-      return false;
-    } else if (!dataConnection.Password) {
-      handleMessage("Password can't be empty").show();
-      return false;
-    } else {
-      return true;
-    }
-  }
 
-  function startConnect() {
-    if (validateDataConnection()) {
-      connect(dataConnection).then(
-        (res) => {
-          dispatch(dataBaseActions.loadAll(res.result));
-          sessionStorage.setItem(
-            "DATA_CONNECTION",
-            JSON.stringify(dataConnection)
-          );
-          handleMessage("Connection started ok")
-            .show()
-            .then((dialogResult) => {
-              console.log(dialogResult);
-            });
-        },
-        (error) => {
-          console.log(error);
-          handleMessage("Connection error").show();
-        }
-      );
-    }
-  }
-
-  function clearDataConnect() {
-    const wDataConnection = {
-      Server: "",
-      User: "",
-      Password: "",
-      DataBase: "",
-    };
-    setDataConnection(wDataConnection);
-    sessionStorage.setItem("DATA_CONNECTION", JSON.stringify(wDataConnection));
-  }
-
-  function connect(pDataConnection) {
-    var data = {
-      server: pDataConnection.Server,
-      user: pDataConnection.User,
-      password: pDataConnection.Password,
-    };
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    };
-
-    return fetch(`${config.apiUrl}/connection`, requestOptions).then(
-      handleResponse
-    );
-  }
   //endregion Service
 
   function handleChange(e) {
@@ -324,95 +271,9 @@ function ListScriptsComponent() {
   return (
     <div className="col-lg-12  h-100">
       <Grid container component="main" className={classes.root}>
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={12}
-          component={Paper}
-          elevation={6}
-          square
-          style={{marginBottom:"10px"}}
-        >
-          <div className={classes.paper}>
-            <Typography component="h1" variant="h5">
-              Data Connection
-            </Typography>
-            <form className={classes.form} validate="true">
-              <div className="row">
-                <div className="col-md-4 col-xs-12 col-lg-4">
-                  <TextField
-                    onChange={handleChange}
-                    fullWidth
-                    value={dataConnection.Server}
-                    margin="normal"
-                    required
-                    id="Server"
-                    label="Server"
-                    name="Server"
-                  />
-                </div>
-                <div className="col-md-4 col-xs-12 col-lg-4">
-                  <TextField
-                    onChange={handleChange}
-                    fullWidth
-                    value={dataConnection.User}
-                    type="text"
-                    margin="normal"
-                    required
-                    id="User"
-                    label="User"
-                    name="User"
-                  />
-                </div>
-                <div className="col-md-4 col-xs-12 col-lg-4">
-                  <TextField
-                    onChange={handleChange}
-                    fullWidth
-                    value={dataConnection.Password}
-                    type="password"
-                    margin="normal"
-                    required
-                    id="Password"
-                    label="Password"
-                    name="Password"
-                  />
-                </div>
-              </div>
-              <br />
-              <div className="row">
-                <div className="col-md-6 col-xs-12 col-lg-6"></div>
-                <div className="col-md-3 col-xs-12 col-lg-3">
-                  <Button
-                    type="button"
-                    style={{ backgroundColor: "#032556" }}
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    onClick={startConnect}
-                    startIcon={<PowerIcon />}
-                    className={classes.submit}
-                  >
-                    Connect
-                  </Button>
-                </div>
-                <div className="col-md-3 col-xs-12 col-lg-3">
-                  <Button
-                    type="button"
-                    fullWidth
-                    variant="contained"
-                    onClick={clearDataConnect}
-                    startIcon={<BackspaceIcon />}
-                    className={classes.submit}
-                  >
-                    Clear Data
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </Grid>
-        
+       
+        <ConnectionComponent dataConnection={dataConnection} onHandleChange={handleChange} onClearDataConnection={clearDataConnect}/>
+
         <Grid
           item
           xs={12}

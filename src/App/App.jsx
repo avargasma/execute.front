@@ -16,6 +16,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import { ListScriptsPage } from '../Views/ExecuteScript';
+import { CompareScriptPage } from '../Views/CompareScript';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -91,6 +92,7 @@ function App() {
                 <Switch>
                     <Route exact path="/" component={HomePage} />
                     <Route path="/execute" component={ListScriptsPage} />
+                    <Route path="/compare" component={CompareScriptPage} />
                 </Switch>
             </Router>
         </div>

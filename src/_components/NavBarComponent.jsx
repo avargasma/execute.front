@@ -16,6 +16,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Code from '@material-ui/icons/Code';
+import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -172,6 +173,14 @@ function NavBarComponent(props) {
                             <Code />
                         </ListItemIcon>
                         <ListItemText primary="Execute Scripts" />
+                    </ListItem>                    
+                </List>
+                <List>
+                    <ListItem button key="compare" component={Link} to='/compare' /* component={props => <Link to="/listusers" {...props} />} */>
+                        <ListItemIcon>
+                            <CompareArrowsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Compare Database" />
                     </ListItem>                    
                 </List>
                 <Divider />
