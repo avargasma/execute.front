@@ -11,7 +11,10 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
-import { ProgressBar } from 'devextreme-react/progress-bar';
+import PowerIcon from "@material-ui/icons/Power";
+import BackspaceIcon from '@material-ui/icons/Backspace';
+import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
+import { ProgressBar } from "devextreme-react/progress-bar";
 import DataGrid, {
   Column,
   Grouping,
@@ -30,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginTop: "25px",
-    backgroundColor:"#032556"
+    backgroundColor: "#032556",
   },
   paper: {
     margin: theme.spacing(2, 2),
@@ -47,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(1, 0, 1),
   },
   textcontrol: {
     width: "100%",
@@ -62,7 +65,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ListScriptsComponent() {
-    
   const classes = useStyles();
   const scriptsList = useSelector((state) => state.scriptsList);
   const dataBaseList = useSelector((state) => state.dataBaseList);
@@ -99,7 +101,12 @@ function ListScriptsComponent() {
         if (dialogResult) {
           let element;
           var wScripts = scriptsList.items;
-          dispatch(loaderActions.SetLoaderExecuteScripts({maxValue:100,processValue:100}));
+          dispatch(
+            loaderActions.SetLoaderExecuteScripts({
+              maxValue: 100,
+              processValue: 100,
+            })
+          );
           let promiseChain = Promise.resolve();
           for (let i = 0; i < wScripts.length; i++) {
             element = wScripts[i];
@@ -111,7 +118,10 @@ function ListScriptsComponent() {
                   (res) => {
                     if (res.result.hasOwnProperty("originalError")) {
                       wScripts[indexScript].ErrorMessage =
-                        wScripts[indexScript].ErrorMessage.replace("Execute ok", "") +
+                        wScripts[indexScript].ErrorMessage.replace(
+                          "Execute ok",
+                          ""
+                        ) +
                         "\n" +
                         res.result.originalError.info.message;
                     } else {
@@ -120,13 +130,17 @@ function ListScriptsComponent() {
                     }
                     dispatch(scriptActions.Update(wScripts[indexScript]));
                     console.log(indexScript);
-                    var wDataLoaderLoadScripts ={
-                        maxValue:wScripts.length,
-                        processValue:(wScripts.length-(indexScript+1))
-                      }
-                    dispatch(loaderActions.SetLoaderExecuteScripts(wDataLoaderLoadScripts));
-                    if(wDataLoaderLoadScripts.processValue == 0){
-                        dispatch(loaderActions.SetLoaderExecuteScripts(null));
+                    var wDataLoaderLoadScripts = {
+                      maxValue: wScripts.length,
+                      processValue: wScripts.length - (indexScript + 1),
+                    };
+                    dispatch(
+                      loaderActions.SetLoaderExecuteScripts(
+                        wDataLoaderLoadScripts
+                      )
+                    );
+                    if (wDataLoaderLoadScripts.processValue == 0) {
+                      dispatch(loaderActions.SetLoaderExecuteScripts(null));
                     }
                   },
                   (error) => {
@@ -241,8 +255,7 @@ function ListScriptsComponent() {
         },
         (error) => {
           console.log(error);
-          handleMessage("Connection error")
-          .show();
+          handleMessage("Connection error").show();
         }
       );
     }
@@ -305,7 +318,7 @@ function ListScriptsComponent() {
   }
 
   function statusFormat(value) {
-    return `Loading: ${ Math.round(value * 100) }%`;
+    return `Loading: ${Math.round(value * 100)}%`;
   }
 
   return (
@@ -319,6 +332,7 @@ function ListScriptsComponent() {
           component={Paper}
           elevation={6}
           square
+          style={{marginBottom:"10px"}}
         >
           <div className={classes.paper}>
             <Typography component="h1" variant="h5">
@@ -371,11 +385,13 @@ function ListScriptsComponent() {
                 <div className="col-md-3 col-xs-12 col-lg-3">
                   <Button
                     type="button"
-                    style={{backgroundColor:"#032556"}}
+                    style={{ backgroundColor: "#032556" }}
                     fullWidth
                     variant="contained"
                     color="primary"
                     onClick={startConnect}
+                    startIcon={<PowerIcon />}
+                    className={classes.submit}
                   >
                     Connect
                   </Button>
@@ -384,99 +400,124 @@ function ListScriptsComponent() {
                   <Button
                     type="button"
                     fullWidth
-                    variant="contained"                    
+                    variant="contained"
                     onClick={clearDataConnect}
+                    startIcon={<BackspaceIcon />}
+                    className={classes.submit}
                   >
-                    Clear
+                    Clear Data
                   </Button>
                 </div>
               </div>
             </form>
           </div>
         </Grid>
+        
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={12}
+          component={Paper}
+          elevation={6}
+          square
+        >
+          <div className={classes.paper}>
+            <Typography component="h1" variant="h5">              
+              Scripts List
+            </Typography>
+            <AddScriptsComponent />
+
+            {scriptsList.items && (
+              <DataGrid
+                id="gridContainer"
+                dataSource={scriptsList.items}
+                showColumnLines={true}
+                rowAlternationEnabled={true}
+                allowColumnResizing={true}
+                columnAutoWidth={true}
+                onExporting={onExporting}
+              >
+                showBorders={true}>
+                <GroupPanel visible={false} />
+                <Grouping autoExpandAll={false} />
+                <Column
+                  dataField="Id"
+                  caption="Sec"
+                  width="30px"
+                  visible={false}
+                />
+                <Column dataField="Name" />
+                <Column dataField="Text" width="30%" />
+                <Column dataField="ErrorMessage" width="200px" />
+                <Export enabled={true} />
+              </DataGrid>
+            )}
+            <br />
+
+            {mDataLoader.dataLoadExecuteScripts && (
+              <ProgressBar
+                id="progress-bar-status"
+                width="100%"
+                min={0}
+                max={mDataLoader.dataLoadExecuteScripts.maxValue}
+                statusFormat={statusFormat}
+                value={
+                  mDataLoader.dataLoadExecuteScripts.maxValue -
+                  mDataLoader.dataLoadExecuteScripts.processValue
+                }
+              />
+            )}
+            <br />
+            <div className="row">
+              <div className="col-md-6 col-xs-12 col-lg-6"></div>
+              <div className="col-md-3 col-xs-12 col-lg-3">
+                <FormControl
+                  className={classes.formControl}
+                  fullWidth
+                  style={{ marginTop: "16px" }}
+                >
+                  <InputLabel id="demo-simple-select-error-label">
+                    Select DataBase
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-error-label"
+                    id="demo-simple-select-error"
+                    value={dataConnection.DataBase}
+                    onChange={handleChange}
+                    inputProps={{
+                      name: "DataBase",
+                      id: "age-native-simple",
+                      margin: "normal",
+                    }}
+                  >
+                    <MenuItem value="">
+                      <em>Select...</em>
+                    </MenuItem>
+                    {dataBaseList.items && renderOptions()}
+                  </Select>
+                </FormControl>
+              </div>
+              <div className="col-md-3 col-xs-12 col-lg-3">
+                <Button
+                  type="button"
+                  fullWidth
+                  variant="contained"
+                  className={classes.button}
+                  style={{ backgroundColor: "#032556", color: "white" }}
+                  onClick={executeStart}
+                  endIcon={<DoubleArrowIcon />}
+                >
+                  Execute
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Grid>
+      
+      
       </Grid>
 
-      <AddScriptsComponent />
-
-      <h3>Scripts</h3>
-      {scriptsList.items && (
-        <DataGrid
-          id="gridContainer"
-          dataSource={scriptsList.items}
-          showColumnLines={true}
-          rowAlternationEnabled={true}
-          allowColumnResizing={true}
-          columnAutoWidth={true}
-          onExporting={onExporting}
-        >
-          showBorders={true}>
-          <GroupPanel visible={false} />
-          <Grouping autoExpandAll={false} />
-          <Column dataField="Id" caption="Sec" width="30px" visible={false} />
-          <Column dataField="Name" />
-          <Column dataField="Text" width="30%" />
-          <Column dataField="ErrorMessage" width="200px" />
-          <Export enabled={true} />
-        </DataGrid>
-      )}
-      <br />
-
-      {mDataLoader.dataLoadExecuteScripts && (
-        <ProgressBar
-          id="progress-bar-status"
-          width="100%"
-          min={0}
-          max={mDataLoader.dataLoadExecuteScripts.maxValue}
-          statusFormat={statusFormat}
-          value={
-            mDataLoader.dataLoadExecuteScripts.maxValue -
-            mDataLoader.dataLoadExecuteScripts.processValue
-          }
-        />
-      )}
-      <br />
-      <div className="row">
-        <div className="col-md-6 col-xs-12 col-lg-6"></div>
-        <div className="col-md-3 col-xs-12 col-lg-3">
-          <FormControl
-            className={classes.formControl}
-            fullWidth
-            style={{ marginTop: "16px" }}
-          >
-            <InputLabel id="demo-simple-select-error-label">
-              Select DataBase
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-error-label"
-              id="demo-simple-select-error"
-              value={dataConnection.DataBase}
-              onChange={handleChange}
-              inputProps={{
-                name: "DataBase",
-                id: "age-native-simple",
-                margin: "normal",
-              }}
-            >
-              <MenuItem value="">
-                <em>Select...</em>
-              </MenuItem>
-              {dataBaseList.items && renderOptions()}
-            </Select>
-          </FormControl>
-        </div>
-        <div className="col-md-3 col-xs-12 col-lg-3">
-          <Button
-            type="button"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            onClick={executeStart}
-          >
-            Execute
-          </Button>
-        </div>
-      </div>
     </div>
   );
 }
