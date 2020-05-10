@@ -12,8 +12,6 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import { custom } from "devextreme/ui/dialog";
 
-import { dataBaseActions } from "../../_actions";
-
 import { scriptService } from "../../_services/index";
 
 
@@ -53,13 +51,14 @@ function ConnectionComponent(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   
+
   function startConnect() {
     if (validateDataConnection()) {
         scriptService.connect(props.dataConnection).then(
-        (res) => {
-          dispatch(dataBaseActions.loadAll(res.result));
+        (res) => {          
+          props.onLoadDataBases(res.result);
           sessionStorage.setItem(
-            "DATA_CONNECTION",
+            props.keyStorage,
             JSON.stringify(props.dataConnection)
           );
           handleMessage("Connection started ok")
@@ -115,7 +114,7 @@ function ConnectionComponent(props) {
                 value={props.dataConnection.Server}
                 margin="normal"
                 required
-                id="Server"
+                
                 label="Server"
                 name="Server"
               />
@@ -128,7 +127,7 @@ function ConnectionComponent(props) {
                 type="text"
                 margin="normal"
                 required
-                id="User"
+                
                 label="User"
                 name="User"
               />
@@ -141,7 +140,7 @@ function ConnectionComponent(props) {
                 type="password"
                 margin="normal"
                 required
-                id="Password"
+               
                 label="Password"
                 name="Password"
               />

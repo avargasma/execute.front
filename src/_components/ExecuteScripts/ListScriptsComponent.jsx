@@ -69,6 +69,7 @@ function ListScriptsComponent() {
   const scriptsList = useSelector((state) => state.scriptsList);
   const dataBaseList = useSelector((state) => state.dataBaseList);
   const mDataLoader = useSelector((state) => state.dataLoader);
+  const wKeyStorageConnectionExecute = 'DATA_CONNECTION';
   const modelDataConnection = {
     Server: "",
     User: "",
@@ -76,7 +77,7 @@ function ListScriptsComponent() {
     DataBase: "",
   };
   const [dataConnection, setDataConnection] = useState(
-    JSON.parse(sessionStorage.getItem("DATA_CONNECTION")) || modelDataConnection
+    JSON.parse(sessionStorage.getItem(wKeyStorageConnectionExecute)) || modelDataConnection
   );
 
   const dispatch = useDispatch();
@@ -84,6 +85,10 @@ function ListScriptsComponent() {
   useEffect(() => {
     dispatch(scriptActions.Init());
   }, []);
+
+  function onLoadDataBases(pDataBases){
+    dispatch(dataBaseActions.loadAll(pDataBases));
+  }  
 
   //region Service
   function executeStart() {
@@ -215,7 +220,7 @@ function ListScriptsComponent() {
       DataBase: "",
     };
     setDataConnection(wDataConnection);
-    sessionStorage.setItem("DATA_CONNECTION", JSON.stringify(wDataConnection));
+    sessionStorage.setItem(wKeyStorageConnectionExecute, JSON.stringify(wDataConnection));
   }
 
   function handleMessage(message, title) {
@@ -272,7 +277,11 @@ function ListScriptsComponent() {
     <div className="col-lg-12  h-100">
       <Grid container component="main" className={classes.root}>
        
-        <ConnectionComponent dataConnection={dataConnection} onHandleChange={handleChange} onClearDataConnection={clearDataConnect}/>
+        <ConnectionComponent dataConnection={dataConnection}        
+        onHandleChange={handleChange} 
+        onClearDataConnection={clearDataConnect}
+        keyStorage={wKeyStorageConnectionExecute}
+        onLoadDataBases={onLoadDataBases}/>
 
         <Grid
           item

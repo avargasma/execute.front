@@ -6,6 +6,16 @@ export function dataBaseList(state ={}, action) {
             return {
                 items: action.dataBases
             };
+        case databaseConstants.LOADALL_FIRST_CONN_SUCCESS:
+            return {
+                ...state,
+                databasesFirstConnection: action.dataBases
+            };
+        case databaseConstants.LOADALL_SECOND_CONN_SUCCESS:
+            return {
+                ...state,
+                databasesSecondConnection: action.dataBases
+            };
         default:
             return state
     }
