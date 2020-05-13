@@ -5,13 +5,13 @@ import { scriptsList } from './script.reducer';
 import { dataBaseList } from './database.reducer';
 import { dataLoader } from './loader.reducer';
 import { dataCompare } from './datacompare.reducer';
+import { connectRouter } from 'connected-react-router'
 
-const rootReducer = combineReducers({
+export default (history) => combineReducers({
+  router: connectRouter(history),
   alert,
   scriptsList,
   dataBaseList,
   dataLoader,
   dataCompare,
-});
-
-export default rootReducer;
+})

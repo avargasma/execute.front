@@ -1,10 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-
-import { store } from './_helpers';
+import configureStore from '../src/_helpers/configureStore';
 import { App } from './App';
-
+const store = configureStore({})
 
 render(
     <Provider store={store}>

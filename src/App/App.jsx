@@ -17,6 +17,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import { ListScriptsPage } from '../Views/ExecuteScript';
 import { CompareScriptPage } from '../Views/CompareScript';
+import { ConnectedRouter } from 'connected-react-router';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -88,13 +89,13 @@ function App() {
                 </Dialog>
             }
 
-            <Router history={history}>
+            <ConnectedRouter history={history}>
                 <Switch>
                     <Route exact path="/" component={HomePage} />
                     <Route path="/execute" component={ListScriptsPage} />
                     <Route path="/compare" component={CompareScriptPage} />
                 </Switch>
-            </Router>
+            </ConnectedRouter>
         </div>
     );
 }
